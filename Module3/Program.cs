@@ -3,6 +3,7 @@ using Application.Services.Authentication;
 using Domain.Interfaces;
 using Infrastructure;
 using Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSett
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -34,6 +37,7 @@ if (app.Environment.IsDevelopment())
 //app.UseAuthorization();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.MapControllers();
 
 app.Run();
