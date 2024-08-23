@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.Authentication
+namespace Application.Services.Authentication
 {
-    public record AuthResponse (
+    public record AuthenticationResult(
         Guid Id,
         string FirstName,
         string LastName,
