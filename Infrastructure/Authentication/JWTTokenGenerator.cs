@@ -41,6 +41,7 @@ namespace Infrastructure.Authentication
                 claims: claims,
                 signingCredentials: signingCredentials);
 
+            // Serializes the security token into a compact string format, which is the JWT that can be returned to clients.
             return new JwtSecurityTokenHandler().WriteToken(securityToken);
         }
     }
