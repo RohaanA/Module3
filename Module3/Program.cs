@@ -1,11 +1,15 @@
+using Application.Common.Interfaces.Authentication;
 using Application.Services.Authentication;
 using Infrastructure;
+using Infrastructure.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adding Services 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddSingleton<IJWTTokenGenerator, JWTTokenGenerator>();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 // Add services to the container.
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

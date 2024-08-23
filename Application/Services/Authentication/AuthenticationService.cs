@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.Common.Interfaces.Authentication;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,12 @@ namespace Application.Services.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly IJWTTokenGenerator _jwtTokenGenerator;
+
+        public AuthenticationService(IJWTTokenGenerator jWTTokenGenerator)
+        {
+            _jwtTokenGenerator = jWTTokenGenerator;
+        }
         public AuthenticationResult Login(string email, string password)
         {
             return new AuthenticationResult (
@@ -20,12 +27,19 @@ namespace Application.Services.Authentication
 
         public AuthenticationResult Register(string firstName, string lastName, string email, string password)
         {
+            // Check if user exists 
+
+            // Create user
+
+            // Create JWT Token
+            Guid userId = Guid.NewGuid();
+            var token = _jwtTokenGenerator.GenerateToken(userId, firstName, lastName);
             return new AuthenticationResult(
                 Guid.NewGuid(),
                 "Rohaan",
                 "Atique",
                 "rohaanpk3@gmail.com",
-                "token");
+                token);
         }
     }
 }
