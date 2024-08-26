@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Authentication;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace Application.Services.Authentication
             // Check if user exists 
 
             // Create user
-
+            User newUser = new User(firstName+lastName, email, password);
             // Create JWT Token
             Guid userId = Guid.NewGuid();
             var token = _jwtTokenGenerator.GenerateToken(userId, firstName, lastName);
