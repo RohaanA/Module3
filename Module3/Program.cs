@@ -5,24 +5,43 @@ using Infrastructure;
 using Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adding Services 
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddSingleton<IJWTTokenGenerator, JWTTokenGenerator>();
+// Authentication Services
+    builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+    builder.Services.AddSingleton<IJWTTokenGenerator, JWTTokenGenerator>();
+    builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
+    var jwtSettingsConf = new JwtSettings();
+    builder.Configuration.Bind(JwtSettings.SectionName, jwtSettingsConf);
+    builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters({
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettingsConf.Issuer,
+        ValidAudience = jwtSettingsConf.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration[jwtSettingsConf.Secret]))
+    });
+    builder.Services.AddAuthorization();
+// Repository and UoW DI
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
-// Add services to the container.
-builder.Services.AddAuthorization();
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+
+// Other Services.
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme);
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddControllers();
+// Swagger Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
 
 var app = builder.Build();
 
@@ -33,7 +52,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
+app.UseExceptionHandler("/error");
 //app.UseAuthorization();
 app.UseHttpsRedirection();
 
