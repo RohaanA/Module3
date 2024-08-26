@@ -26,12 +26,12 @@ namespace Application.Services.Authentication
                 "token");
         }
 
-        public AuthenticationResult Register(string firstName, string lastName, string email, string password)
+        public AuthenticationResult Register(string firstName, string lastName, string email, string password, string role)
         {
             // Check if user exists 
 
             // Create user
-            User newUser = new User(firstName+lastName, email, password);
+
             // Create JWT Token
             Guid userId = Guid.NewGuid();
             var token = _jwtTokenGenerator.GenerateToken(userId, firstName, lastName);

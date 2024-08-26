@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Authentication;
+using Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -32,6 +33,33 @@ namespace Infrastructure.Authentication
                 new Claim(JwtRegisteredClaimNames.GivenName, firstName),
                 new Claim(JwtRegisteredClaimNames.FamilyName, lastName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+
+            var securityToken = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                expires: DateTime.Now.AddMinutes(_jwtSettings.ExpirationTimeInMinutes),
+                claims: claims,
+                signingCredentials: signingCredentials);
+
+            // Serializes the security token into a compact string format, which is the JWT that can be returned to clients.
+            return new JwtSecurityTokenHandler().WriteToken(securityToken);
+        }
+
+        public string GenerateToken(User user, string role)
+        {
+            var signingCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
+                SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserID.ToString()),
+                new Claim(JwtRegisteredClaimNames.GivenName, user.Name),
+                new Claim(JwtRegisteredClaimNames.FamilyName, user.Name),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, role)
             };
 
             var securityToken = new JwtSecurityToken(

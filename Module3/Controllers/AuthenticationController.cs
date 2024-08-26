@@ -18,7 +18,7 @@ namespace Api.Controllers
         [HttpPost("register")]
         public IActionResult Register(RegisterRequest request)
         {
-            var authResult = _auth.Register(request.FirstName, request.LastName, request.Email, request.Password);
+            var authResult = _auth.Register(request.FirstName, request.LastName, request.Email, request.Password, request.Role);
 
             var response = new AuthResponse(
                 authResult.Id,

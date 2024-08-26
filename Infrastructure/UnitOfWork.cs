@@ -26,9 +26,9 @@ namespace Infrastructure
             Jobs = new JobRepository(_db);
             Users = new UserRepository(_db);
         }
-        public void Complete()
+        public async Task Complete()
         {
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
         public void Dispose()
