@@ -9,10 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Diagnostics;
+using Application.Services.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adding Services 
+    builder.Services.AddScoped<IJobService, JobService>();
 // Authentication Services
 {
     builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
@@ -27,10 +29,10 @@ var builder = WebApplication.CreateBuilder(args);
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "Module3",
-        ValidAudience = "Module3",
+        ValidIssuer = jwtSettingsConf.Issuer,
+        ValidAudience = jwtSettingsConf.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes("a-very-long-super-secret-key-that-is-at-least-32-characters-long"))
+            Encoding.UTF8.GetBytes(jwtSettingsConf.Secret))
     });
     builder.Services.AddAuthorization();
 }

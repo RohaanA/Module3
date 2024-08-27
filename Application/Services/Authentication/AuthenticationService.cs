@@ -23,13 +23,16 @@ namespace Application.Services.Authentication
         {
             // Check if user exists of given email
             User user = await _unitOfWork.Users.FindByEmailAsync(email);
-
             if (user is null)
             {
                 // Throw 404 error (user not found)
                 throw new Exception("User not found");
-
             }
+            string role = "User";
+            // Check if user is admin
+            IEnumerable<Administrator> adminList = await _unitOfWork.Administrators.FindAsync(a => a.UserID == user.UserID);
+            if (adminList.Count() > 0)
+                role = "Administrator";
 
             if (user.Password != password)
             {
@@ -38,7 +41,7 @@ namespace Application.Services.Authentication
 
             // Generate JWT Token and return success
             Guid userId = Guid.NewGuid();
-            var token = _jwtTokenGenerator.GenerateToken(user, "Administrator");
+            var token = _jwtTokenGenerator.GenerateToken(user, role);
             return new AuthenticationResult (
                 Guid.NewGuid(),
                 user.Name,
