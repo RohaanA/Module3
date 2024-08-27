@@ -14,11 +14,11 @@ namespace Infrastructure
             _db = db;
             dbSet = db.Set<TEntity>();
         }
-        public bool Add(TEntity entity)
+        public async Task<bool> AddAsync(TEntity entity)
         {
             try
             {
-                dbSet.Add(entity);
+                await dbSet.AddAsync(entity);
             }
             catch (Exception e)
             {
@@ -28,11 +28,11 @@ namespace Infrastructure
             return true;
         }
 
-        public bool AddRange(IEnumerable<TEntity> entities)
+        public async Task<bool> AddRangeAsync(IEnumerable<TEntity> entities)
         {
             try
             {
-                dbSet.AddRange(entities);
+                await dbSet.AddRangeAsync(entities);
             }
             catch (Exception e)
             {
@@ -42,23 +42,23 @@ namespace Infrastructure
             return true;
         }
 
-        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
         {
             IQueryable<TEntity> query = dbSet.Where(predicate);
-            return query.ToList();
+            return await query.ToListAsync();
         }
 
-        public TEntity Get(int id)
+        public async Task<TEntity> GetAsync(int id)
         {
-            return dbSet.Find(id);
+            return await dbSet.FindAsync(id);
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return dbSet.ToList();
+            return await dbSet.ToListAsync();
         }
 
-        public bool Remove(TEntity entity)
+        public async Task<bool> RemoveAsync(TEntity entity)
         {
             try
             {
@@ -76,11 +76,11 @@ namespace Infrastructure
             return true;
         }
 
-        public bool Remove(int id)
+        public async Task<bool> RemoveAsync(int id)
         {
             try
             {
-                TEntity entity = Get(id);
+                TEntity entity = await GetAsync(id);
                 if (entity == null)
                 {
                     Console.WriteLine($"No entity found with the given id: {id}");

@@ -10,6 +10,6 @@ namespace Domain.Entities
         public required string JobTitle { get; set; }
         public required string JobDescription { get; set; }
         [ForeignKey("Department")]
-        public int DepartmentID { get; set; }
+        public int DeptID { get; set; }
     }
 }

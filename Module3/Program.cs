@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add Problem Details Specification
+builder.Services.AddProblemDetails(options =>
+    options.CustomizeProblemDetails = context =>
+    {
+        // Add Trace ID from HTTPContext to individually identify exceptions.
+        context.ProblemDetails.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
+    });
 
 
 var app = builder.Build();
@@ -83,7 +91,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Global Error Handling
 app.UseExceptionHandler("/error");
+app.Map("/error", (HttpContext context) =>
+{
+    // Fetch the exception
+    Exception? exception = context.Features.Get<IExceptionHandlerFeature>().Error;
+    if (exception is null)
+    {
+        return Results.Problem();
+    }
+
+    // Custom Error Handling
+    return Results.Problem(
+        detail: exception.Message,
+        title: exception.GetType().Name,
+        statusCode: 500);
+});
 //app.UseAuthorization();
 app.UseHttpsRedirection();
 

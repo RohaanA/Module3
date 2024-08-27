@@ -10,15 +10,15 @@ namespace Domain.Interfaces
     public interface IRepository <T> where T : class
     {
         // Fetch Functions
-        T Get(int id);
-        IEnumerable<T> GetAll();
-        IEnumerable<T> Find (Expression<Func<T, bool>> predicate);
+        Task<T> GetAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
 
         // Add Functions
-        bool Add(T entity);
-        bool AddRange(IEnumerable<T> entities);
-        bool Remove(T entity);
-        bool Remove (int id);
+        Task<bool> AddAsync(T entity);
+        Task<bool> AddRangeAsync(IEnumerable<T> entities);
+        Task<bool> RemoveAsync(T entity);
+        Task<bool> RemoveAsync(int id);
         bool RemoveRange(IEnumerable<T> entities);
     }
 }

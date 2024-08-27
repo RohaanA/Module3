@@ -11,6 +11,6 @@ namespace Domain.Interfaces
         IJobRepository Jobs { get; }
         IUserRepository Users { get; }
 
-        void Complete();
+        Task Complete();
     }
 }

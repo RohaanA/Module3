@@ -13,5 +13,10 @@ namespace Infrastructure.Repositories
         {
             get { return _db as ApplicationDbContext; }
         }
+
+        public async Task<User> FindByEmailAsync(string email)
+        {
+            return await ApplicationDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
     }
 }

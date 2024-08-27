@@ -30,9 +30,9 @@ namespace Api.Controllers
             return Ok(response);
         }
         [HttpPost("login")]
-        public IActionResult Login (LoginRequest request)
+        public async Task<IActionResult> Login (LoginRequest request)
         {
-            var authResult = _auth.Login(request.Email, request.Password);
+            var authResult = await _auth.Login(request.Email, request.Password);
 
             var response = new AuthResponse(
                 authResult.Id,

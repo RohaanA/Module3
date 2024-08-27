@@ -9,6 +9,6 @@ namespace Domain.Interfaces.RepositoryInterfaces
 {
     public interface IUserRepository : IRepository<User>
     {
-
+        public Task<User> FindByEmailAsync(string email);
     }
 }
