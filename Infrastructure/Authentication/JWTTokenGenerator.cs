@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -33,12 +34,13 @@ namespace Infrastructure.Authentication
                 new Claim(JwtRegisteredClaimNames.GivenName, firstName),
                 new Claim(JwtRegisteredClaimNames.FamilyName, lastName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, "User")
             };
 
             var securityToken = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
-                expires: DateTime.Now.AddMinutes(_jwtSettings.ExpirationTimeInMinutes),
+                expires: DateTime.Now.AddMinutes(_jwtSettings.ExpiryMinutes),
                 claims: claims,
                 signingCredentials: signingCredentials);
 
@@ -65,7 +67,7 @@ namespace Infrastructure.Authentication
             var securityToken = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
-                expires: DateTime.Now.AddMinutes(_jwtSettings.ExpirationTimeInMinutes),
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
                 claims: claims,
                 signingCredentials: signingCredentials);
 

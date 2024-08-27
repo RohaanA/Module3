@@ -2,6 +2,7 @@
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace Api.Controllers
 {
@@ -12,17 +13,20 @@ namespace Api.Controllers
         public JobsController(IUnitOfWork unitOfWork) { _unitOfWork = unitOfWork; }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _unitOfWork.Jobs.GetAllAsync());
         }
 
         // Authorized
-        [Authorize(Roles = "Administrator")]
         [HttpPost]
-        public async Task<IActionResult> CreateJob(Job job)
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> CreateJob(string jobTitle, string jobDescription, int departmentId)
         {
-            bool success =  await _unitOfWork.Jobs.AddAsync(job);
+
+            Job job = new Job { JobTitle = jobTitle, JobDescription = jobDescription, DeptID = departmentId};
+            bool success = await _unitOfWork.Jobs.AddAsync(job);
             if (!success)
             {
                 throw new Exception("Could not add the job");

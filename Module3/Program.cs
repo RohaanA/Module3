@@ -27,10 +27,10 @@ var builder = WebApplication.CreateBuilder(args);
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettingsConf.Issuer,
-        ValidAudience = jwtSettingsConf.Audience,
+        ValidIssuer = "Module3",
+        ValidAudience = "Module3",
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtSettingsConf.Secret))
+            Encoding.UTF8.GetBytes("a-very-long-super-secret-key-that-is-at-least-32-characters-long"))
     });
     builder.Services.AddAuthorization();
 }
@@ -112,6 +112,7 @@ app.Map("/error", (HttpContext context) =>
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
